@@ -10,19 +10,17 @@ void MyStepper::run()
     int16_t s1 = s + v;
     if(v>0)
     {
-        this->setDirP();
         if(s1<s)
         {
-            this->doStep();
+            this->stepP();
             this->step++;
         }
     }
     else
     {
-        this->setDirN();
         if(s1>s)
         {
-            this->doStep();
+            this->stepN();
             this->step--;
         }
     }

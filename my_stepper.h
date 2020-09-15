@@ -9,14 +9,13 @@
 
 class MyStepper {
 public:
-    int16_t a;
-    int16_t v;
-    int16_t s;
-    int32_t step;
+    int16_t a = 0;
+    int16_t v = 0;
+    int16_t s = 0;
+    int32_t step = 0;
     void run();
-    virtual void setDirN() = 0;
-    virtual void setDirP() = 0;
-    virtual void doStep() = 0;
+    void (* stepN)();
+    void (* stepP)();
 };
 
 #endif //_MY_STEPPER_H_

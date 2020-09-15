@@ -23,10 +23,8 @@ void stepN() {
 void setup(){
   size(200, 200);
   background(255,255,255);
-  myPort = new Serial(this, "COM1", 115200); 
+  myPort = new Serial(this, "COM6", 115200); 
   myPort.buffer(1);
-  
-  thread("run");
 }
 
 
@@ -34,8 +32,11 @@ void draw(){
   background(255,255,255);
   translate(width/2, height/2);
   rotate(angle);
+  
   strokeWeight(10);
   line(0, 0, 50, 0);
+  rect(22, 22, 55, 55);
+
 }
 
 void serialEvent(Serial p) {

@@ -2,44 +2,62 @@
 #include <MsTimer2.h>
 #include "my_stepper.h"
 
-class TestStepper : public MyStepper {
-public:
-    void setDirN() override;
-    void setDirP() override;
-    void doStep() override;
-};
+MyStepper stepperX;
+MyStepper stepperY;
 
-void TestStepper::setDirN() {
-//    Serial.println("setDirN");
+void serialStepXP() {
+    Serial.write('1');
 }
 
-void TestStepper::setDirP() {
-//    Serial.println("setDirP");
+void serialStepXN() {
+    Serial.write('2');
 }
 
-void TestStepper::doStep() {
-    Serial.println("doStep");
+void serialStepYP() {
+    Serial.write('3');
+}
+
+void serialStepYN() {
+    Serial.write('4');
+}
+
+void run() {
+    stepperX.run();
+    stepperY.run();
 }
 
 void setup() {
+
+    stepperX.v = 0x300;
+    stepperX.stepP = serialStepXP;
+    stepperX.stepN = serialStepXN;
+
+    stepperY.v = 0x600;
+    stepperY.stepP = serialStepYP;
+    stepperY.stepN = serialStepYN;
+
+
     pinMode(LED_BUILTIN, OUTPUT);
-    Serial.begin(9600);
+    Serial.begin(115200);
+    MsTimer2::set(1, run); // 500ms period
+    MsTimer2::start();
 }
 
+float v_theta_s = 50 * PI/180.0;
+float v_theta_ms = v_theta_s / 1000;
+float r = 100;
+float rv = v_theta_ms * r * 0x10000;
+float theta = 0;
+int ms = 100;
 void loop() {
-    TestStepper stepper;
-    stepper.a = 100;
-    stepper.v = 200;
-    stepper.s = 300;
-    stepper.step = 400;
-    uint32_t s = micros();
-    stepper.run();
-    uint32_t e = micros();
-    uint32_t d = e - s;
-    Serial.print("\nTime: ");
-    Serial.print(d);
-    Serial.println(" us");
-    while (1);
+    while (true) {
+        int16_t vx = (int16_t)(rv * cos(theta));
+        int16_t vy = (int16_t)(-rv * sin(theta));
+        stepperX.v = vx;
+        stepperY.v = vy;
+        delay(ms);
+        theta += v_theta_ms * ms;
+    }
 }
 
 
