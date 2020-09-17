@@ -2,9 +2,6 @@
 #include <MsTimer2.h>
 #include "my_stepper.h"
 
-MyStepper stepperX;
-MyStepper stepperY;
-
 void serialStepXP() {
     Serial.write('1');
 }
@@ -21,22 +18,17 @@ void serialStepYN() {
     Serial.write('4');
 }
 
+MyStepper stepperX(serialStepXP, serialStepXN);
+MyStepper stepperY(serialStepYP, serialStepYN);
+PositionController positionControllerX;
+PositionController positionControllerY;
+
 void run() {
-    stepperX.run();
-    stepperY.run();
+    positionControllerX.run(&stepperX);
+    positionControllerY.run(&stepperY);
 }
 
 void setup() {
-
-    stepperX.v = 0x300;
-    stepperX.stepP = serialStepXP;
-    stepperX.stepN = serialStepXN;
-
-    stepperY.v = 0x600;
-    stepperY.stepP = serialStepYP;
-    stepperY.stepN = serialStepYN;
-
-
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
     MsTimer2::set(1, run); // 500ms period
