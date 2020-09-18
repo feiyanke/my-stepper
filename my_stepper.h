@@ -24,22 +24,25 @@ public:
 
 class SpeedController {
 private:
-    int16_t a;          //加减速度绝对值
+    MyStepper* stepper;
+    int16_t a;          //加减速度绝对值,0为无加减速过程
 public:
     int16_t v_target;   //目标速度
-    SpeedController(int16_t a);
-    void run(MyStepper* s);
+    SpeedController(MyStepper* stepper, int16_t a);
+    void run();
 };
 
 //以恒定速度，在给定时间内运动到给定位置，保证最终位置到达，最大程度保证时间
 class PositionController {
 public:
+    MyStepper* stepper;
     int32_t s_target;   //目标位置
     int32_t duration;   //给定时间,单位dt
     int16_t v_max;      //最大速度(绝对值)
-    PositionController();
-    PositionController(int16_t v_max);
-    void run(MyStepper* stepper);
+    PositionController(MyStepper* stepper);
+    PositionController(MyStepper* stepper, int16_t v_max);
+    void run();
+    void setTarget(int32_t target, int32_t duration);
 };
 
 #endif //_MY_STEPPER_H_

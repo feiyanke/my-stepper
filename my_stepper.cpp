@@ -34,33 +34,53 @@ void MyStepper::run()
     this->v = v1;
 }
 
-SpeedController::SpeedController(int16_t a) {
+SpeedController::SpeedController(MyStepper* stepper, int16_t a) {
     this->a = a<0?-a:a;
+    this->stepper = stepper;
 }
 
-void SpeedController::run(MyStepper* stepper) {
-    int16_t v_diff = this->v_target - stepper->v;
+void SpeedController::run() {
+    if (this->a == 0) {
+        this->stepper->a = 0;
+        this->stepper->v = this->v_target;
+        return;
+    }
+    int16_t v_diff = this->v_target - this->stepper->v;
     if(v_diff >= this->a) {
-        stepper->a = this->a;
+        this->stepper->a = this->a;
     } else if (v_diff <= (-this->a)) {
-        stepper->a = -(this->a);
+        this->stepper->a = -(this->a);
     } else {
-        stepper->a = 0;
-        stepper->v = this->v_target;
+        this->stepper->a = 0;
+        this->stepper->v = this->v_target;
     }
 }
 
-PositionController::PositionController() {
+PositionController::PositionController(MyStepper* stepper) {
     this->v_max = 0x7FF0;
+    this->stepper = stepper;
 }
 
-PositionController::PositionController(int16_t v_max) {
+PositionController::PositionController(MyStepper* stepper, int16_t v_max) {
     this->v_max = v_max;
+    this->stepper = stepper;
 }
 
-void PositionController::run(MyStepper* stepper) {
-    if (this->s_target = stepper->step) {
-        stepper->v = 0;
+void PositionController::run() {
+    if (this->s_target = this->stepper->step) {
+        this->stepper->v = 0;
     }
-    stepper->run();
+    this->stepper->run();
+}
+
+void PositionController::setTarget(int32_t target, int32_t duration) {
+    int32_t diff = (target - this->stepper->step)<<16;
+    int16_t v = diff/duration;
+    if (v>v_max) {
+        v = v_max;
+    } else if (v<-v_max) {
+        v = -v_max;
+    }
+    this->stepper->v = v;
+    this->s_target = target;
 }
