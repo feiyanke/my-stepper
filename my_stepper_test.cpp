@@ -35,16 +35,32 @@ void run() {
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
-    MsTimer2::set(1, run); // 500ms period
-    MsTimer2::start();
+    //MsTimer2::set(1, run); // 500ms period
+    //MsTimer2::start();
 }
 int8_t count = -1;
-int8_t buffer[2];
+uint8_t buffer[4];
+bool update=false;
 int16_t x_target;
 int16_t y_target;
 int16_t v_max = 0x7FF0;
+char p[32];
 
 void loop() {
+    if (!update) {
+        return;
+    }
+    update = false;
+    int16_t sx, sy;
+    noInterrupts();
+    sx = x_target;
+    sy = y_target;
+    interrupts();
+    sprintf(p, "target: %d, %d\n", sx, sy);
+    Serial.print(p);
+}
+
+void loop1() {
     //以最快v_max速度运行到指定点
     int16_t sx, sy;
     noInterrupts();
@@ -74,7 +90,6 @@ void loop() {
         }
         speedControllerY.v_target = y_diff * v_max / x_diff_abs;
     }
-
 }
 
 
@@ -100,16 +115,19 @@ void circle() {
 void serialEvent() {
     while (Serial.available()) {
         // get the new byte:
-        char inChar = (char)Serial.read();
+        uint8_t inChar = (uint8_t)Serial.read();
         if (count == -1 && inChar == 0x00) {
             count = 0;
-        } else if (count == 0) {
-            buffer[0] = inChar;
-            count = 1;
-        } else if (count == 1) {
-            buffer[1] = inChar;
-            x_target = buffer[0];
-            y_target = buffer[1];
+        } else if (count < 3) {
+            buffer[count] = inChar;
+            count++;
+        } else if (count == 3) {
+            buffer[3] = inChar;
+            x_target = buffer[0] + (buffer[1]<<8);
+            y_target = buffer[2] + (buffer[3]<<8);
+            update = true;
+            count = -1;
+        } else {
             count = -1;
         }
     }
