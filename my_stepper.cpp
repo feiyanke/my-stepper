@@ -56,31 +56,30 @@ void SpeedController::run() {
     }
 }
 
-PositionController::PositionController(MyStepper* stepper) {
-    this->v_max = 0x7FF0;
-    this->stepper = stepper;
-}
-
-PositionController::PositionController(MyStepper* stepper, int16_t v_max) {
-    this->v_max = v_max;
-    this->stepper = stepper;
+PositionController::PositionController(SpeedController* speedController) {
+    this->speedController = speedController;
+    this->stepper = speedController->stepper;
 }
 
 void PositionController::run() {
-    if (this->s_target = this->stepper->step) {
-        this->stepper->v = 0;
+    if (this->s_target == this->stepper->step) {
+        this->speedController->v_target = 0;
     }
-    this->stepper->run();
 }
 
-void PositionController::setTarget(int32_t target, int32_t duration) {
-    int32_t diff = (target - this->stepper->step)<<16;
-    int16_t v = diff/duration;
-    if (v>v_max) {
-        v = v_max;
-    } else if (v<-v_max) {
-        v = -v_max;
+void PositionController::setTarget(int32_t target, int16_t velocity, bool flag) {
+    //以velocity速度运行到指定点
+    int32_t diff = target - this->stepper->step;
+    if (flag) {
+        if (diff > 0) {
+            this->speedController->v_target = velocity;
+        } else if (diff < 0) {
+            this->speedController->v_target = -velocity;
+        } else {
+            this->speedController->v_target = 0;
+        }
+    } else {
+        this->speedController->v_target = velocity;
     }
-    this->stepper->v = v;
     this->s_target = target;
 }

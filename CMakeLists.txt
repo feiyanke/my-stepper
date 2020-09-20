@@ -30,7 +30,7 @@ set(${PROJECT_NAME}_HDRS my_stepper.h)
 
 #### Additional settings for programmer. From programmers.txt
 set(${PROJECT_NAME}_PROGRAMMER avrispmkii)
-set(${PROJECT_NAME}_PORT COM7)
+set(${PROJECT_NAME}_PORT COM6)
 # set(uno.upload.speed 9600)
 
 ## Verbose build process
