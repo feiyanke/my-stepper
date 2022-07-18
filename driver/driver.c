@@ -12,7 +12,7 @@
  * @param w 
  * @return fixedpt 
  */
-fixedpt get_out(fixedpt w) {
+static fixedpt get_out(fixedpt w) {
     if (w <= FIXEDPT(1) && w >= FIXEDPT(-1)) {
         return w;
     } else if (w <= FIXEDPT(3) && w >= FIXEDPT(1)) {

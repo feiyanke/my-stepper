@@ -16,8 +16,6 @@ typedef struct {
     int32_t duty;
 } PWM;
 
-fixedpt get_out(fixedpt w);
-
 void get_output(fixedpt theta, PWM* pwm_a, PWM* pwm_b);
 
 #ifdef __cplusplus
