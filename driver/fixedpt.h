@@ -22,9 +22,7 @@ typedef int32_t fixedpt;
  * these days? :) */
 
 #define FIXEDPT_BITS	32
-#ifndef FIXEDPT_WBITS
 #define FIXEDPT_WBITS	3		//整数部分位数，可任意配置，关系的到定点数的取值范围和小数部分精度
-#endif
 #define FIXEDPT_FBITS	(FIXEDPT_BITS - FIXEDPT_WBITS)		//小数部分位数
 #define FIXEDPT_FMASK	((1 << FIXEDPT_FBITS) - 1)
 
@@ -58,7 +56,7 @@ static inline fixedpt fixedpt_formf(float a)
 
 static inline float fixedpt_tof(fixedpt a)
 {
-    return a / (1LL << FIXEDPT_FBITS);
+    return ((float)a) / (1LL << FIXEDPT_FBITS);
 }
 
 static inline int32_t fixedpt_mul(fixedpt A, fixedpt B)
