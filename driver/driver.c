@@ -38,7 +38,7 @@ static inline int32_t get_duty(fixedpt a) {
  * @param output 输出幅值
  * @param pwm PWM参数
  */
-static void get_pwm(fixedpt output, PWM* pwm) {
+static inline void get_pwm(fixedpt output, PWM* pwm) {
     pwm->direction = get_direct(output);
     pwm->duty = get_duty(output);
 }
