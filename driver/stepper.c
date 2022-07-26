@@ -24,7 +24,7 @@ void run(Stepper* stepper) {
         stepper->v = -MAX_V;
     }
     stepper->s += stepper->v;
-    fixedpt theta = get_theta(stepper->s); 
+    fixedpt theta = stepper->theta; 
     PWM a, b;
     get_output(theta, &a, &b);
     (stepper->out_a)(a.direction, a.duty);
